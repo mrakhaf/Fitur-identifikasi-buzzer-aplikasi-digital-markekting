@@ -3,7 +3,8 @@ import pandas as pd
 from decouple import config
 
 def auth():
-    BEARER_TOKEN = config('BEARER_TOKEN')
+    BEARER_TOKEN = "AAAAAAAAAAAAAAAAAAAAAF%2F%2FXwEAAAAAkM4FZuw0TVlA3drq5dO86BBuw1A%3DfnvxoF1NmMa4WAUMh6sZ50q2ZRMmhMcN74RFN7sJtT2xrlBro7"
+    # BEARER_TOKEN = config('BEARER_TOKEN')
     client = tweepy.Client(BEARER_TOKEN)
     return client
 
