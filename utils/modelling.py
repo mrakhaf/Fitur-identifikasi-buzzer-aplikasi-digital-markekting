@@ -7,7 +7,7 @@ def modelling(clean_data):
     for w in sorted(most_influental, key=most_influental.get, reverse=True):
         buzzer = {
             'account_name': w,
-            'measure': round(most_influental[w],2)
+            'measure': most_influental[w]
         }
         buzzer_account.append(buzzer)
     return buzzer_account        
