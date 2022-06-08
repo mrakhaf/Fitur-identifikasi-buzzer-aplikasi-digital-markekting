@@ -10,7 +10,7 @@ app = Flask(__name__)
 def hello_world():
     return "Hello, This is Digital Marketing Application!"
 
-@app.route("/test", methods=['POST'])
+@app.route("/buzzerfinder", methods=['POST'])
 def getData():
     keyword = request.form.get('keyword')
 
@@ -22,6 +22,8 @@ def getData():
 
     #from modelling.py
     result = modelling.modelling(clean_data)
+
+    result - result[:10]
 
     return {
         "data": [
