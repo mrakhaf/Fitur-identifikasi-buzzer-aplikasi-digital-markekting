@@ -4,7 +4,7 @@ import re
 def preprocessing(data):
     df = data
     df = df.drop_duplicates(subset ="id")
-    df = df[df.followers_count >= 5000]
+    df = df[df.followers_count >= 3000]
     columns = ['x', 'y']
     clean_data = pd.DataFrame(columns=columns)
     for username, tweet in zip(df.username, df.text):

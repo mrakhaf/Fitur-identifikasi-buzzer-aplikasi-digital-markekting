@@ -1,4 +1,3 @@
-import json
 from flask import Flask, request
 import utils.crawling_dataV2 as crawling
 import utils.preprocessing_data as preprocessing
