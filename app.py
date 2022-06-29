@@ -1,7 +1,7 @@
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 import utils.crawling_dataV2 as crawling
-import utils.preprocessing_data as preprocessing
+import utils.preprocessing_dataV2 as preprocessing
 import utils.modelling as modelling
 
 app = Flask(__name__)
@@ -59,10 +59,23 @@ def savetweet():
         followers_count=followers_count,
         keyword=keyword
         )
+
+    # tweet = [
+    #     {
+    #         "id":"18922938",
+    #         "tweet": "jasdgahsgdhs"
+    #     }
+    # ]
+    
+
+    # for tweet in tweet:
+    #     print(tweet['id'])
+        
     db.session.add(tweet)
     db.session.commit()
 
-    return "Success add tweet"
+
+    return tweet
 
 @app.route("/gettweetfromkeyword", methods=['POST'])
 def gettweetfromkeyword():
@@ -70,7 +83,9 @@ def gettweetfromkeyword():
 
     keyword = request.form.get('keyword')
     
-    tweets = Tweet.query.filter_by(keyword=keyword).all()
+    # tweets = Tweet.query.filter(keyword=keyword, 
+    #                 db.func.date(Tweet.date)<=end, 
+    #                 db.func.date(Tweet.date)>=start).all()
     
     for tweet in tweets:
         print(tweet.id)
