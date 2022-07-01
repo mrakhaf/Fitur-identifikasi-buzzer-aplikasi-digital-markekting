@@ -1,11 +1,16 @@
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 import utils.crawling_dataV2 as crawling
 import utils.preprocessing_dataV2 as preprocessing
 import utils.modelling as modelling
+import utils.get_data as get_data
+
+import datetime
 
 app = Flask(__name__)
 db = SQLAlchemy()
+migrate = Migrate(app,db)
 
 # config db 
 DB_NAME = 'buzzerfinder'
@@ -19,11 +24,12 @@ def hello_world():
     return "Hello, This is Digital Marketing Application!"
 
 @app.route("/buzzerfinder", methods=['POST'])
-def getData():
+def buzzerFinder():
     keyword = request.form.get('keyword')
 
     #from crawling_dataV2.py
-    data = crawling.get_data(keyword)
+    # data = crawling.get_data(keyword)
+    data = get_data.getData(keyword)
 
     #from preprocessing.py
     clean_data = preprocessing.preprocessing(data)
@@ -42,7 +48,7 @@ def getData():
 @app.route("/savetweet", methods=['POST'])
 def savetweet(): 
     from models import Tweet
-    id = request.form.get('id')
+    id_tweet = request.form.get('id_tweet')
     date = request.form.get('date')
     tweet = request.form.get('tweet')
     id_user = request.form.get('id_user')
@@ -51,53 +57,73 @@ def savetweet():
     keyword = request.form.get('keyword')
     
     tweet = Tweet(
-        id=id, 
+        id_tweet=id_tweet, 
         date=date, 
         tweet=tweet, 
         id_user=id_user, 
         username=username, 
         followers_count=followers_count,
         keyword=keyword
-        )
+        )   
 
-    # tweet = [
-    #     {
-    #         "id":"18922938",
-    #         "tweet": "jasdgahsgdhs"
-    #     }
-    # ]
-    
-
-    # for tweet in tweet:
-    #     print(tweet['id'])
-        
     db.session.add(tweet)
     db.session.commit()
 
-
-    return tweet
+    data = [
+        {
+            "id_tweet": tweet.id,
+            "date": tweet.date,
+            "tweet": tweet.tweet,
+            "id_user": tweet.id_user,
+            "username": tweet.username,
+            "followers_count": tweet.followers_count,
+            "keyword": tweet.keyword,
+        }
+    ]
+        
+    return {
+        "data" : data
+    }
 
 @app.route("/gettweetfromkeyword", methods=['POST'])
 def gettweetfromkeyword():
     from models import Tweet 
 
     keyword = request.form.get('keyword')
-    
-    # tweets = Tweet.query.filter(keyword=keyword, 
-    #                 db.func.date(Tweet.date)<=end, 
-    #                 db.func.date(Tweet.date)>=start).all()
-    
-    for tweet in tweets:
-        print(tweet.id)
-        print(tweet.date)
-        print(tweet.tweet)
-        print(tweet.id_user)
-        print(tweet.username)
-        print(tweet.followers_count)
-        print(tweet.keyword)
-        print()
 
-    return "Success get tweet"  
+    startdate = datetime.datetime.today()
+    delta = datetime.timedelta(days=8)
+    min8days = startdate - delta
+    enddate = min8days.strftime('%Y-%m-%d')
+    
+    tweets = Tweet.query.filter(keyword == keyword, 
+                    Tweet.date.between(enddate, startdate)
+                    ).all()
+        
+    all_tweets = []
+    for tweet in tweets:
+        data = {
+            "id": tweet.id,
+            "id_tweet": tweet.id_tweet,
+            "date": tweet.date,
+            "tweet": tweet.tweet,
+            "id_user": tweet.id_user,
+            "username": tweet.username,
+            "followers_count": tweet.followers_count,
+            "keyword": tweet.keyword,
+        }
+        all_tweets.append(data)
+
+    return {
+        "data": all_tweets
+    }
+
+@app.route("/testGetData", methods=['POST'])
+def test_get_data():
+    keyword = request.form.get('keyword')
+    data = get_data.getData(keyword)
+    
+    return str(len(data))
 
 if __name__ == '__main__':
   app.run(debug=True)    
