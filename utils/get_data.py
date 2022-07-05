@@ -12,11 +12,18 @@ def auth():
     client = tweepy.Client(BEARER_TOKEN)
     return client
 
-def getFromDB(keyword):
-    startdate = datetime.datetime.today()
+def getFromDB(keyword, date):
+    
+    if date != '':
+        date = date.split('-')
+        startdate = datetime.date(int(date[0]), int(date[1]), int(date[2]))
+    else : 
+        startdate = datetime.datetime.today()
+
     delta = datetime.timedelta(days=8)
     min8days = startdate - delta
     enddate = min8days.strftime('%Y-%m-%d')
+
     tweets = Tweet.query.filter(Tweet.keyword == keyword, 
                     Tweet.date.between(enddate, startdate)
                     ).all()
@@ -46,22 +53,36 @@ def getFromDB(keyword):
 
     return data_tweets     
 
-def get_data_api_twitter(keyword):
+def get_data_api_twitter(keyword, date):
     client = auth()
-    
     tweets_data = []
     tweets_user = []
     keyword += " lang:id"
-    for response in tweepy.Paginator(client.search_recent_tweets,
+    if date != '' :
+        date = date.split('-')
+        date = datetime.date(int(date[0]), int(date[1]), int(date[2]))
+        date = date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-4]+"Z"
+        for response in tweepy.Paginator(client.search_recent_tweets,
                                     query=keyword,
-                                    # start_time="2022-03-11",
-                                    # end_time=time,
+                                    start_time=date,
+                                    # end_time=date,
                                     tweet_fields = ["created_at", "author_id", "text"],
                                     user_fields = ["name", "username", "location", "verified", "description", "public_metrics"],
                                     max_results = 100,
                                     expansions='author_id', limit=500):
-        tweets_data += response.data
-        tweets_user += response.includes["users"]    
+            tweets_data += response.data
+            tweets_user += response.includes["users"]
+    else : 
+        for response in tweepy.Paginator(client.search_recent_tweets,
+                                        query=keyword,
+                                        # start_time=date,
+                                        # end_time=time,
+                                        tweet_fields = ["created_at", "author_id", "text"],
+                                        user_fields = ["name", "username", "location", "verified", "description", "public_metrics"],
+                                        max_results = 100,
+                                        expansions='author_id', limit=500):
+            tweets_data += response.data
+            tweets_user += response.includes["users"]    
 
     tweet_data = []
     for tweet in tweets_data:
@@ -90,17 +111,41 @@ def get_data_api_twitter(keyword):
 
 def getData(keyword):
     #get from databases 
-    data = getFromDB(keyword)  
-
+    date = checkDate(keyword)
+    data = getFromDB(keyword, date) 
+ 
     #check 
     if len(data) > 0 :
-        print('get from db!')
-        data_tweets = data
+        if date == '':
+            print('get from db!')
+            data_tweets = data
+        else :
+            print("get data from db and request api!")
+            data_tweets = get_data_api_twitter(keyword, date)
+
+            #save to db
+            tweets = data_tweets.drop_duplicates(subset='id')
+            for id, created_at, text, id_user, username, followers_count in zip(tweets.id, tweets.created_at, tweets.text, tweets.id_user, tweets.username, tweets.followers_count,):
+                tweet = Tweet(
+                    id_tweet=id, 
+                    date=created_at, 
+                    text=text, 
+                    id_user=id_user, 
+                    username=username, 
+                    followers_count=followers_count,
+                    keyword=keyword
+                    )   
+
+                db.session.add(tweet)
+                db.session.commit()
+            date = ""    
+            data_tweets = getFromDB(keyword, date)
 
         #tambahkan checkDate 
     else:
         print('get from request api!')
-        data_tweets = get_data_api_twitter(keyword)
+        date = ""
+        data_tweets = get_data_api_twitter(keyword, date)
 
         #save to db
         tweets = data_tweets.drop_duplicates(subset='id')
@@ -117,8 +162,7 @@ def getData(keyword):
 
             db.session.add(tweet)
             db.session.commit()
-        
-        data_tweets = getFromDB(keyword)
+        data_tweets = getFromDB(keyword, date)
 
     return data_tweets 
 
@@ -128,22 +172,22 @@ def checkDate(keyword):
     while day >= 0:
         delta = datetime.timedelta(days=day)
         date_check = date_today - delta
-        startdate = date_check + datetime.timedelta(days=1)
-        startdate = startdate.strftime('%Y-%m-%d')
         strtime = date_check.strftime('%Y-%m-%d')
-        print(strtime)
-        print(startdate)
+        time1 = (datetime.time(00, 00, 00)).strftime("%H:%M:%S")
+        time2 = (datetime.time(23, 59, 59)).strftime("%H:%M:%S")
         tweets = Tweet.query.filter(Tweet.keyword == keyword, 
-                    Tweet.date.between(strtime, startdate)
+                    Tweet.date.between((strtime + " " + time1), (strtime + " " + time2))
                     ).all()
+        date_not_found = ''                       
         if len(tweets) > 0 :
             print(strtime + " ada!")
         else :
-            print(strtime + " tidak ada")   
+            print(strtime + " tidak ada")
+            date_not_found = strtime   
             day = 0 
         day -= 1
 
-    return strtime
+    return date_not_found
 
 # def checkData(keyword):
 #     keyword = request.form.get('keyword')
