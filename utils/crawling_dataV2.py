@@ -42,8 +42,7 @@ def get_data(keyword):
         user_info = {
             'id_user': user.id,
             'username': user.username,
-            'followers_count': user.public_metrics['followers_count'],
-            'verified': user.verified,
+            'followers_count': user.public_metrics['followers_count']
         }
         users_data.append(user_info)
 
