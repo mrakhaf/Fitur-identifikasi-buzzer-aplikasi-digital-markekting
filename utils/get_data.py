@@ -141,7 +141,6 @@ def getData(keyword):
             date = ""    
             data_tweets = getFromDB(keyword, date)
 
-        #tambahkan checkDate 
     else:
         print('get from request api!')
         date = ""
