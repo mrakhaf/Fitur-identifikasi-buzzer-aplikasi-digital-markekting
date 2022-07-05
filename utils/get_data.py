@@ -122,9 +122,28 @@ def getData(keyword):
 
     return data_tweets 
 
-def checkDate(data):
+def checkDate(keyword):
+    day = 7
+    date_today = datetime.date.today()
+    while day >= 0:
+        delta = datetime.timedelta(days=day)
+        date_check = date_today - delta
+        startdate = date_check + datetime.timedelta(days=1)
+        startdate = startdate.strftime('%Y-%m-%d')
+        strtime = date_check.strftime('%Y-%m-%d')
+        print(strtime)
+        print(startdate)
+        tweets = Tweet.query.filter(Tweet.keyword == keyword, 
+                    Tweet.date.between(strtime, startdate)
+                    ).all()
+        if len(tweets) > 0 :
+            print(strtime + " ada!")
+        else :
+            print(strtime + " tidak ada")   
+            day = 0 
+        day -= 1
 
-    return "ok"
+    return strtime
 
 # def checkData(keyword):
 #     keyword = request.form.get('keyword')

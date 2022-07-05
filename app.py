@@ -125,5 +125,12 @@ def test_get_data():
     
     return str(len(data))
 
+@app.route("/checkDate", methods=['POST'])
+def check_date():
+    keyword = request.form.get('keyword')
+    data = get_data.checkDate(keyword)
+    
+    return data    
+
 if __name__ == '__main__':
   app.run(debug=True)    
