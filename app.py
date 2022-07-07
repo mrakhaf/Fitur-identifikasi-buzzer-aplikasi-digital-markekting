@@ -37,7 +37,7 @@ def buzzerFinder():
     #from modelling.py
     result = modelling.modelling(clean_data)
 
-    result - result[:10]
+    result = result[:10]
 
     return {
         "data": [
@@ -45,92 +45,92 @@ def buzzerFinder():
         ]
     }
 
-@app.route("/savetweet", methods=['POST'])
-def savetweet(): 
-    from models import Tweet
-    id_tweet = request.form.get('id_tweet')
-    date = request.form.get('date')
-    tweet = request.form.get('tweet')
-    id_user = request.form.get('id_user')
-    username = request.form.get('username')
-    followers_count = request.form.get('followers_count')
-    keyword = request.form.get('keyword')
+# @app.route("/savetweet", methods=['POST'])
+# def savetweet(): 
+#     from models import Tweet
+#     id_tweet = request.form.get('id_tweet')
+#     date = request.form.get('date')
+#     tweet = request.form.get('tweet')
+#     id_user = request.form.get('id_user')
+#     username = request.form.get('username')
+#     followers_count = request.form.get('followers_count')
+#     keyword = request.form.get('keyword')
     
-    tweet = Tweet(
-        id_tweet=id_tweet, 
-        date=date, 
-        tweet=tweet, 
-        id_user=id_user, 
-        username=username, 
-        followers_count=followers_count,
-        keyword=keyword
-        )   
+#     tweet = Tweet(
+#         id_tweet=id_tweet, 
+#         date=date, 
+#         tweet=tweet, 
+#         id_user=id_user, 
+#         username=username, 
+#         followers_count=followers_count,
+#         keyword=keyword
+#         )   
 
-    db.session.add(tweet)
-    db.session.commit()
+#     db.session.add(tweet)
+#     db.session.commit()
 
-    data = [
-        {
-            "id_tweet": tweet.id,
-            "date": tweet.date,
-            "tweet": tweet.tweet,
-            "id_user": tweet.id_user,
-            "username": tweet.username,
-            "followers_count": tweet.followers_count,
-            "keyword": tweet.keyword,
-        }
-    ]
+#     data = [
+#         {
+#             "id_tweet": tweet.id,
+#             "date": tweet.date,
+#             "tweet": tweet.tweet,
+#             "id_user": tweet.id_user,
+#             "username": tweet.username,
+#             "followers_count": tweet.followers_count,
+#             "keyword": tweet.keyword,
+#         }
+#     ]
         
-    return {
-        "data" : data
-    }
+#     return {
+#         "data" : data
+#     }
 
-@app.route("/gettweetfromkeyword", methods=['POST'])
-def gettweetfromkeyword():
-    from models import Tweet 
+# @app.route("/gettweetfromkeyword", methods=['POST'])
+# def gettweetfromkeyword():
+#     from models import Tweet 
 
-    keyword = request.form.get('keyword')
+#     keyword = request.form.get('keyword')
 
-    startdate = datetime.datetime.today()
-    delta = datetime.timedelta(days=8)
-    min8days = startdate - delta
-    enddate = min8days.strftime('%Y-%m-%d')
+#     startdate = datetime.datetime.today()
+#     delta = datetime.timedelta(days=8)
+#     min8days = startdate - delta
+#     enddate = min8days.strftime('%Y-%m-%d')
     
-    tweets = Tweet.query.filter(keyword == keyword, 
-                    Tweet.date.between(enddate, startdate)
-                    ).all()
+#     tweets = Tweet.query.filter(keyword == keyword, 
+#                     Tweet.date.between(enddate, startdate)
+#                     ).all()
         
-    all_tweets = []
-    for tweet in tweets:
-        data = {
-            "id": tweet.id,
-            "id_tweet": tweet.id_tweet,
-            "date": tweet.date,
-            "tweet": tweet.tweet,
-            "id_user": tweet.id_user,
-            "username": tweet.username,
-            "followers_count": tweet.followers_count,
-            "keyword": tweet.keyword,
-        }
-        all_tweets.append(data)
+#     all_tweets = []
+#     for tweet in tweets:
+#         data = {
+#             "id": tweet.id,
+#             "id_tweet": tweet.id_tweet,
+#             "date": tweet.date,
+#             "tweet": tweet.tweet,
+#             "id_user": tweet.id_user,
+#             "username": tweet.username,
+#             "followers_count": tweet.followers_count,
+#             "keyword": tweet.keyword,
+#         }
+#         all_tweets.append(data)
 
-    return {
-        "data": all_tweets
-    }
+#     return {
+#         "data": all_tweets
+#     }
 
-@app.route("/testGetData", methods=['POST'])
-def test_get_data():
-    keyword = request.form.get('keyword')
-    data = get_data.getData(keyword)
+# @app.route("/testGetData", methods=['POST'])
+# def test_get_data():
+#     keyword = request.form.get('keyword')
+#     data = get_data.getData(keyword)
     
-    return str(len(data))
+#     return str(len(data))
 
-@app.route("/checkDate", methods=['POST'])
-def check_date():
-    keyword = request.form.get('keyword')
-    data = get_data.checkDate(keyword)
+# @app.route("/checkDate", methods=['POST'])
+# def check_date():
+#     keyword = request.form.get('keyword')
+#     data = get_data.checkDate(keyword)
     
-    return data    
+#     return data    
 
 if __name__ == '__main__':
   app.run(debug=True)    
