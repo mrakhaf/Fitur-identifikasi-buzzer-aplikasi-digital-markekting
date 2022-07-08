@@ -1,0 +1,1 @@
+web: python app.py db upgrade; gunicorn manage:app

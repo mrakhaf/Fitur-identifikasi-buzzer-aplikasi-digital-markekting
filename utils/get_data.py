@@ -1,4 +1,3 @@
-from gridfs import Database
 import tweepy
 import pandas as pd
 from flask import request
