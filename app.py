@@ -1,23 +1,37 @@
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-import utils.crawling_dataV2 as crawling
-import utils.preprocessing_dataV2 as preprocessing
-import utils.modelling as modelling
-import utils.get_data as get_data
 
-import datetime
 
 app = Flask(__name__)
 db = SQLAlchemy()
 migrate = Migrate(app,db)
 
+
 # config db 
-DB_NAME = 'buzzerfinder'
-app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root:@localhost/{DB_NAME}'
+USER = 'root'
+PASSWORD = ''
+DATABASE = 'buzzerfinder'
+# connection_name is of the format `project:region:your-cloudsql-instance`
+CONNECTION_NAME = 'buzzerfinder-355616:asia-southeast2:buzzerfinder' 
+
+SQLALCHEMY_DATABASE_URI = (
+    'mysql+pymysql://{user}:{password}@/{database}'
+    '?unix_socket=/cloudsql/{connection_name}').format(
+        user=USER, password=PASSWORD,
+        database=DATABASE, connection_name=CONNECTION_NAME)
+
+app.config['SQLALCHEMY_DATABASE_URI'] =  SQLALCHEMY_DATABASE_URI
+
+# DB_NAME = 'buzzerfinder'
+# app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root:@localhost/{DB_NAME}'
 db.init_app(app)
 db.create_all(app=app)
 print('Database connected!')
+
+import utils.preprocessing_dataV2 as preprocessing
+import utils.modelling as modelling
+import utils.get_data as get_data
 
 @app.route("/")
 def hello_world():
