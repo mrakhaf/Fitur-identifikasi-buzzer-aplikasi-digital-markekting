@@ -59,11 +59,23 @@ def get_data_api_twitter(keyword, date):
     keyword += " lang:id"
     if date != '' :
         date = date.split('-')
+        #datetime
+        now = datetime.datetime.now()
+        current_time = now.strftime("%H:%M:%S")
+        current_time = current_time.split(':')
         date = datetime.date(int(date[0]), int(date[1]), int(date[2]))
-        date = date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-4]+"Z"
+
+        if date == datetime.date.today().strftime('%Y-%m-%d'):
+            time = datetime.time(int(current_time[0]), (int(current_time[1])), int(current_time[2]))
+            date_time = datetime.datetime.combine(date, time)
+        else :
+            date_time = date    
+
+        date_time = date_time.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-4]+"Z"
+        print(date_time)
         for response in tweepy.Paginator(client.search_recent_tweets,
                                     query=keyword,
-                                    start_time=date,
+                                    start_time=date_time,
                                     # end_time=date,
                                     tweet_fields = ["created_at", "author_id", "text"],
                                     user_fields = ["name", "username", "location", "verified", "description", "public_metrics"],
@@ -181,8 +193,10 @@ def checkDate(keyword):
             print(strtime + " ada!")
         else :
             print(strtime + " tidak ada")
+            if day == 7 :
+                return date_not_found   
             date_not_found = strtime   
-            day = 0 
+            day = 0     
         day -= 1
 
     return date_not_found

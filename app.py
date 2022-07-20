@@ -1,6 +1,7 @@
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+import datetime
 
 
 app = Flask(__name__)
@@ -8,23 +9,23 @@ db = SQLAlchemy()
 migrate = Migrate(app,db)
 
 
-# config db 
-USER = 'root'
-PASSWORD = ''
-DATABASE = 'buzzerfinder'
-# connection_name is of the format `project:region:your-cloudsql-instance`
-CONNECTION_NAME = 'buzzerfinder-355616:asia-southeast2:buzzerfinder' 
+# # config db 
+# USER = 'root'
+# PASSWORD = ''
+# DATABASE = 'buzzerfinder'
+# # connection_name is of the format `project:region:your-cloudsql-instance`
+# CONNECTION_NAME = 'buzzerfinder-355616:asia-southeast2:buzzerfinder' 
 
-SQLALCHEMY_DATABASE_URI = (
-    'mysql+pymysql://{user}:{password}@/{database}'
-    '?unix_socket=/cloudsql/{connection_name}').format(
-        user=USER, password=PASSWORD,
-        database=DATABASE, connection_name=CONNECTION_NAME)
+# SQLALCHEMY_DATABASE_URI = (
+#     'mysql+pymysql://{user}:{password}@/{database}'
+#     '?unix_socket=/cloudsql/{connection_name}').format(
+#         user=USER, password=PASSWORD,
+#         database=DATABASE, connection_name=CONNECTION_NAME)
 
-app.config['SQLALCHEMY_DATABASE_URI'] =  SQLALCHEMY_DATABASE_URI
+# app.config['SQLALCHEMY_DATABASE_URI'] =  SQLALCHEMY_DATABASE_URI
 
-# DB_NAME = 'buzzerfinder'
-# app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root:@localhost/{DB_NAME}'
+DB_NAME = 'buzzerfinder'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root:@localhost/{DB_NAME}'
 db.init_app(app)
 db.create_all(app=app)
 print('Database connected!')
@@ -44,7 +45,7 @@ def buzzerFinder():
     #from crawling_dataV2.py
     # data = crawling.get_data(keyword)
     data = get_data.getData(keyword)
-
+    print("jumlah data: ", len(data))    
     #from preprocessing.py
     clean_data = preprocessing.preprocessing(data)
 
@@ -56,7 +57,16 @@ def buzzerFinder():
     return {
         "data": [
             result
-        ]
+        ],
+        "keyword": [
+            keyword
+        ],
+        "jumlah_data": [
+            len(data)
+        ],
+        "tanggal": [
+            str(datetime.datetime.now())  
+        ]    
     }
 
 # @app.route("/savetweet", methods=['POST'])
