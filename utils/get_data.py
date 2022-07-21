@@ -58,25 +58,37 @@ def get_data_api_twitter(keyword, date):
     tweets_user = []
     keyword += " lang:id"
     if date != '' :
-        date = date.split('-')
-        #datetime
-        now = datetime.datetime.now()
+        
+        #time-now
+        now = datetime.datetime.utcnow()
+        print('now: ', now.strftime('%Y-%m-%dT%H:%M:%SZ'))
         current_time = now.strftime("%H:%M:%S")
         current_time = current_time.split(':')
+
+        #date
+        date = date.split('-')
         date = datetime.date(int(date[0]), int(date[1]), int(date[2]))
 
-        if date == datetime.date.today().strftime('%Y-%m-%d'):
+        if date == datetime.datetime.utcnow().strftime('%Y-%m-%d'):
             time = datetime.time(int(current_time[0]), (int(current_time[1])), int(current_time[2]))
             date_time = datetime.datetime.combine(date, time)
+            date_time = date_time - datetime.timedelta(seconds=15)
         else :
-            date_time = date    
+            date_time = date - datetime.timedelta(seconds=15)   
 
-        date_time = date_time.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-4]+"Z"
-        print(date_time)
+        start_time = date_time.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+        # end_time = datetime.datetime.utcnow()
+        # end_time = end_time - datetime.timedelta(seconds=15)
+        # end_time = end_time.strftime('%Y-%m-%dT%H:%M:%SZ')
+
+        print('start time :', start_time)
+        # print('end time :', end_time)
+
         for response in tweepy.Paginator(client.search_recent_tweets,
                                     query=keyword,
-                                    start_time=date_time,
-                                    # end_time=date,
+                                    start_time=start_time,
+                                    # end_time=end_time,
                                     tweet_fields = ["created_at", "author_id", "text"],
                                     user_fields = ["name", "username", "location", "verified", "description", "public_metrics"],
                                     max_results = 100,
@@ -178,7 +190,7 @@ def getData(keyword):
 
 def checkDate(keyword):
     day = 7
-    date_today = datetime.date.today()
+    date_today = datetime.datetime.utcnow()
     while day >= 0:
         delta = datetime.timedelta(days=day)
         date_check = date_today - delta
@@ -188,11 +200,13 @@ def checkDate(keyword):
         tweets = Tweet.query.filter(Tweet.keyword == keyword, 
                     Tweet.date.between((strtime + " " + time1), (strtime + " " + time2))
                     ).all()
-        date_not_found = ''                       
+        date_not_found = '' 
+
+        strtime = date_check + datetime.timedelta(hours=8)                      
         if len(tweets) > 0 :
-            print(strtime + " ada!")
+            print(strtime.strftime('%Y-%m-%d') + " ada!")
         else :
-            print(strtime + " tidak ada")
+            print(strtime.strftime('%Y-%m-%d') + " tidak ada")
             if day == 7 :
                 return date_not_found   
             date_not_found = strtime   
