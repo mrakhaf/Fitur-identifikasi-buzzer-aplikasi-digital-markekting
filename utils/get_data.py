@@ -58,6 +58,9 @@ def get_data_api_twitter(keyword, date):
     tweets_user = []
     keyword += " lang:id"
     if date != '' :
+        #date
+        date = date.split('-')
+        date = datetime.date(int(date[0]), int(date[1]), int(date[2]))
         
         #time-now
         now = datetime.datetime.utcnow()
@@ -65,9 +68,6 @@ def get_data_api_twitter(keyword, date):
         current_time = now.strftime("%H:%M:%S")
         current_time = current_time.split(':')
 
-        #date
-        date = date.split('-')
-        date = datetime.date(int(date[0]), int(date[1]), int(date[2]))
 
         if date == datetime.datetime.utcnow().strftime('%Y-%m-%d'):
             time = datetime.time(int(current_time[0]), (int(current_time[1])), int(current_time[2]))
@@ -202,11 +202,11 @@ def checkDate(keyword):
                     ).all()
         date_not_found = '' 
 
-        strtime = date_check + datetime.timedelta(hours=8)                      
+        strtime = (date_check + datetime.timedelta(hours=8)).strftime('%Y-%m-%d')                      
         if len(tweets) > 0 :
-            print(strtime.strftime('%Y-%m-%d') + " ada!")
+            print(strtime + " ada!")
         else :
-            print(strtime.strftime('%Y-%m-%d') + " tidak ada")
+            print(strtime + " tidak ada")
             if day == 7 :
                 return date_not_found   
             date_not_found = strtime   
