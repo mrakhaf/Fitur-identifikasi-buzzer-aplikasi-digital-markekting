@@ -25,7 +25,14 @@ migrate = Migrate(app,db)
 # app.config['SQLALCHEMY_DATABASE_URI'] =  SQLALCHEMY_DATABASE_URI
 
 DB_NAME = 'buzzerfinder'
+# Local 
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root:@localhost/{DB_NAME}'
+
+# NGROK
+# app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root:@0.tcp.ap.ngrok.io:3306/{DB_NAME}'
+
+# AZURE
+# app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://rakha:Codelabs123@buzzer-finder-server.mysql.database.azure.com:3306/{DB_NAME}'
 db.init_app(app)
 db.create_all(app=app)
 print('Database connected!')

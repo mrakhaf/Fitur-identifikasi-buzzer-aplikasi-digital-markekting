@@ -39,7 +39,7 @@ def modelling(clean_data):
     df_result_CC = pd.DataFrame(result_CC)
 
     #eigenvector centrality
-    EVC = nx.eigenvector_centrality_numpy(my_graph, weight='weight')
+    EVC = nx.eigenvector_centrality(my_graph, weight='weight')
     result_EVC = []
     for w in sorted(EVC, key=EVC.get, reverse=True):
         buzzer = {
