@@ -2,6 +2,7 @@ from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import datetime
+from decouple import config
 
 
 app = Flask(__name__)
@@ -29,7 +30,11 @@ DB_NAME = 'buzzerfinder'
 # app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root:@localhost/{DB_NAME}'
 
 #PlanetscaleDB
-app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://mdk101du5swm:pscale_pw_Sw-rx-PMipeEZWe8K75Sw0hvrB1J8RyCrV-i2I4o0pM@glwqq9cj98n1.ap-southeast-2.psdb.cloud/buzzerfinder?ssl_verify_identity=true'
+USER = config('DBUSER')
+PASSWORD = config('DBPASS')
+DATABASE = config('DBNAME')
+HOST = config('DBHOST')
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{USER}:{PASSWORD}@{HOST}/{DATABASE}?ssl_verify_identity=true'
 
 #Clear DB
 # app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://b277ad36d83de0:4ca16a8d@us-cdbr-east-06.cleardb.net/heroku_56df55bc35791a2'
