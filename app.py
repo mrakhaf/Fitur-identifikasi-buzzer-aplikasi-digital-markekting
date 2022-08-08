@@ -26,7 +26,13 @@ migrate = Migrate(app,db)
 
 DB_NAME = 'buzzerfinder'
 # Local 
-app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root:@localhost/{DB_NAME}'
+# app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root:@localhost/{DB_NAME}'
+
+#PlanetscaleDB
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://mdk101du5swm:pscale_pw_Sw-rx-PMipeEZWe8K75Sw0hvrB1J8RyCrV-i2I4o0pM@glwqq9cj98n1.ap-southeast-2.psdb.cloud/buzzerfinder?ssl_verify_identity=true'
+
+#Clear DB
+# app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://b277ad36d83de0:4ca16a8d@us-cdbr-east-06.cleardb.net/heroku_56df55bc35791a2'
 
 # NGROK
 # app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root:@0.tcp.ap.ngrok.io:3306/{DB_NAME}'
@@ -48,7 +54,6 @@ def hello_world():
 @app.route("/buzzerfinder", methods=['POST'])
 def buzzerFinder():
     keyword = request.form.get('keyword')
-
     #from crawling_dataV2.py
     # data = crawling.get_data(keyword)
     data = get_data.getData(keyword)
@@ -164,4 +169,4 @@ def buzzerFinder():
 #     return data    
 
 if __name__ == '__main__':
-  app.run(debug=True)    
+  app.run(debug=False)    
