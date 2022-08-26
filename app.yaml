@@ -12,6 +12,3 @@ resources:
   cpu: 2
   memory_gb: 2.3
   disk_size_gb: 15
-
-beta_settings:
-  cloud_sql_instances: buzzerfinder-355616:asia-southeast2:buzzerfinder
